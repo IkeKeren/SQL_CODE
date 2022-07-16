@@ -26,6 +26,10 @@ SELECT *
 FROM items
 WHERE items.name LIKE "%kaos%";
 
+--JAWABAN PROGATE: petik nya 1 aja
+-- dapatkan semua baris dengan nilai string "kaos"            
+SELECT * FROM items WHERE name LIKE '%kaos%';
+
 -- dapatkan nama, harga dan laba semua produk
 SELECT name, price , price - cost
 FROM items;
@@ -68,6 +72,16 @@ GROUP BY Items.id
 ORDER BY COunt(*) DESC
 LIMIT 5;
 
+--JAWABAN PROGATE: Group by nya 2
+-- dapatkan nama dan jumlah penjualan unit untuk 5 barang dengan penjualan tertinggi            
+SELECT items.id, items.name, COUNT(*)            
+FROM sales_records            
+JOIN items            
+ON sales_records.item_id = items.id            
+GROUP BY items.id, items.name            
+ORDER BY COUNT(*) DESC            
+LIMIT 5
+
 -- dapatkan total penjualan dan total laba untuk seluruh site
 SELECT SUM(items.price) AS "total penjualan", SUM(price-cost) AS "total laba"
 FROM items
@@ -83,6 +97,15 @@ SELECT purchased_at, SUM(items.price) AS "total penjualan" FROM sales_records
 JOIN items ON items.id = sales_records.item_id
 GROUP by purchased_at;
 
+--JAWABAN PROGATE:
+-- dapatkan total harga penjualan dan kelompokan berdasarkan tanggal pembelianya
+SELECT sales_records.purchased_at, SUM(items.price) AS "total penjualan"
+FROM sales_records
+JOIN items
+ON sales_records.item_id = items.id
+GROUP BY purchased_at
+ORDER BY purchased_at ASC;
+
 /*
 dapatkan nama dan jumlah barang untuk pengguna
 yang sudah membeli lebih dari 10 barang
@@ -90,6 +113,14 @@ yang sudah membeli lebih dari 10 barang
 SELECT users.id, users.name, COUNT(*) AS "jumlah" FROM sales_records
 JOIN users ON users.id = sales_records.user_id
 GROUP BY users.id HAVING jumlah >= 10;
+
+--JAWAB PROGATE:
+SELECT users.id, users.name, count(*) AS "jumlah"
+FROM sales_records
+JOIN users
+ON sales_records.user_id = users.id
+GROUP BY users.id, users.name
+HAVING count(*) >= 10;
 
 -- dapatkan id dan nama pengguna yang membeli "sandal"
 SELECT users.id, users.name FROM users
@@ -106,6 +137,14 @@ JOIN sales_records
 ON sales_records.item_id = items.id
 GROUP BY items.gender;
 
+--JAWAB PROGATE:
+-- dapatkan data total penjualan untuk gender pria, wanita, dan netral
+SELECT items.gender, SUM(items.price) AS "total penjualan"
+FROM sales_records
+JOIN items
+ON sales_records.item_id = items.id
+GROUP BY items.gender;
+
 -- dapatkan data untuk 5 produk dengan penjualan tertinggi 
 SELECT items.id , items.name , SUM(items.price) AS "total penjualan"
 FROM sales_records 
@@ -115,6 +154,16 @@ GROUP BY items.id
 ORDER BY  SUM(items.price) DESC
 LIMIT 5;
 
+--JAWAB PROGATE:
+-- dapatkan data untuk 5 produk dengan penjualan tertinggi 
+SELECT items.id, items.name, items.price * COUNT(*) AS "total penjualan"
+FROM sales_records
+JOIN items
+ON sales_records.item_id = items.id
+GROUP BY items.id, items.name, items.price
+ORDER BY COUNT(*) * items.price DESC
+LIMIT 5;
+
 -- dapatkan semua barang dengan total penjualan yang lebih besar dari "hoodie abu-abu"
 SELECT items.id , items.name , SUM(items.price) AS "total penjualan"
 FROM sales_records 
@@ -122,3 +171,18 @@ JOIN items
 ON sales_records.item_id = items.id
 GROUP BY items.id HAVING SUM(items.price) > 1596
 ORDER BY  items.id ASC;
+
+--JAWABAN PROGATE:
+-- dapatkan semua barang dengan total penjualan yang lebih besar dari "hoodie abu-abu"
+SELECT items.id, items.name, items.price * COUNT(*) AS "total penjualan"
+FROM sales_records
+JOIN items
+ON sales_records.item_id = items.id
+GROUP BY items.id, items.name, items.price
+HAVING (COUNT(*) * items.price) > (
+SELECT COUNT(*) * items.price
+FROM sales_records
+JOIN items
+ON sales_records.item_id = items.id
+WHERE items.name = "hoodie abu-abu"
+);
